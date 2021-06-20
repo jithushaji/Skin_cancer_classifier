@@ -2,11 +2,13 @@ import os
 from threading import Thread 
 import time
 import numpy as np
-from keras import Model
+#from keras import Model
+from tensorflow.keras import models
 import cv2
 from tensorflow.keras.preprocessing.image import img_to_array
 from tensorflow.keras.preprocessing.image import load_img
-from keras.models import model_from_json
+#from keras.models import model_from_json
+from tensorflow.keras.models import model_from_json
 from tensorflow.keras.preprocessing import image
 import tensorflow as tf
 from tkinter import *
@@ -64,12 +66,19 @@ def run(filename):
     inimage=process_image(filename['i'])
     print("[INFO]       Classifying")
     predic= newmodel.predict(inimage)
-    
+    labels=['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanocytic nevi', 'Melanoma', 'Vascular lesions']
+    #print(predic.shape)
+    print(labels)
+    print(predic)
     classes = predic.argmax(axis=-1)
     n=classes[0]
-    labels=['Actinic keratoses', 'Basal cell carcinoma', 'Benign keratosis', 'Dermatofibroma', 'Melanocytic nevi', 'Melanoma', 'Vascular lesions']
-    out=(labels[n])
-    messagebox.showinfo("showinfo", out)
+    prob=int((predic[0,n])*100)
+    #print(prob)
+    if (prob)<50:
+        messagebox.showinfo("info", "NOT SKIN CANCER")
+    else:
+        out=(labels[n]+"\n"+"\n"+"probability: "+str(prob)+"%")
+        messagebox.showinfo("DETECTED", out)
     
 win1=Tk()
 filename = {}
@@ -81,5 +90,4 @@ file_path_show = Entry(win1, width=40,font=12,textvariable = entryText ).place(x
 submit_button1 = Button(win1, text= "Submit",command = lambda: openNewWindow(filename) ).place(x=195,y=60)
 #submit_button1 = Button(win1, text= "Submit",command = lambda: run(filename) ).place(x=195,y=60)
 win1.mainloop()
-
 
