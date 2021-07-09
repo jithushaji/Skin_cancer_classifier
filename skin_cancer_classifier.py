@@ -74,20 +74,48 @@ def run(filename):
     n=classes[0]
     prob=int((predic[0,n])*100)
     #print(prob)
-    if (prob)<50:
+
+    if (prob)<75:
         messagebox.showinfo("info", "NOT SKIN CANCER")
     else:
         out=(labels[n]+"\n"+"\n"+"probability: "+str(prob)+"%")
         messagebox.showinfo("DETECTED", out)
+
+ 
+ 
+def capture():
     
+    camera = cv2.VideoCapture(0) #if there are two cameras, usually this is the front facing one
+    if camera.read() == (False,None):
+        camera= cv2.VideoCapture(0) 
+    else:
+        pass
+    while True:
+        return_value,image = camera.read()
+        cv2.imshow('image',image)
+
+        if cv2.waitKey(1)& 0xFF == ord('s'): #take a screenshot if 's' is pressed
+            cv2.imwrite('capture'+'.jpg',image) #save screenshot as test.jpg
+            break
+        
+        if cv2.waitKey(1)& 0xFF == ord('q'): #take a screenshot if 's' is pressedqq
+            break
+
+    camera.release()
+    cv2.destroyAllWindows()
+
+ 
+ 
+ 
 win1=Tk()
 filename = {}
-win1.geometry("500x100")
+win1.geometry("520x100")
 win1.title("Skin Cancer Classifier")
-browse_button1 = Button(win1, text= "Browse", command = lambda: browseFiles(filename)).place(x=405,y=18)
+browse_button1 = Button(win1, text= "Browse", command = lambda: browseFiles(filename)).place(x=430,y=18)
 entryText = tk.StringVar()
 file_path_show = Entry(win1, width=40,font=12,textvariable = entryText ).place(x=20,y=20)
 submit_button1 = Button(win1, text= "Submit",command = lambda: openNewWindow(filename) ).place(x=195,y=60)
+capture_button2 = Button(win1, text= "Capture",command = lambda: capture() ).place(x=300,y=60)
 #submit_button1 = Button(win1, text= "Submit",command = lambda: run(filename) ).place(x=195,y=60)
 win1.mainloop()
 
